@@ -1,0 +1,13 @@
+.serena/
+.vscode/
+*.code-workspace
+*.log
+*.pdb
+*.tmp
+**/*.rs.bk
+**/mutants.out*/
+/html
+debug/
+rustc-ice-*.txt
+target/
+tmp/
