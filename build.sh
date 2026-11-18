@@ -9,22 +9,23 @@ case "$#:$mode" in
     *) fail 'Usage: build.sh [check|update-output]' ;;
 esac
 
-command -v rustup >/dev/null || fail 'Install rustup from https://rustup.rs/ and add it to PATH.'
+setup_fail() { fail "$* See README.md."; }
+command -v rustup >/dev/null || setup_fail 'Missing rustup.'
 export RUSTUP_TOOLCHAIN=stable RUSTUP_AUTO_INSTALL=0 CARGO_NET_OFFLINE=true
-rustup run stable true || fail 'Install stable: rustup toolchain install stable --profile minimal'
+rustup run stable true || setup_fail 'Cannot run the stable Rust toolchain.'
 # Some subprocesses call rustc/rustdoc by name, not through a rustup proxy.
-compiler=$(rustup which --toolchain stable rustc) || fail 'Install stable: rustup toolchain install stable --profile minimal'
+compiler=$(rustup which --toolchain stable rustc) || setup_fail 'Cannot locate stable rustc.'
 export PATH="${compiler%/*}:$PATH"
 
 require_version() {
-    local tool=$1 expected=$2 hint=$3 actual
-    command -v "$tool" >/dev/null || fail "Missing $tool. $hint"
-    actual=$("$tool" --version) || fail "Cannot run $tool. $hint"
-    [[ $actual == "$expected" ]] || fail "Expected $expected; found $actual. $hint"
+    local tool=$1 expected=$2 actual
+    command -v "$tool" >/dev/null || setup_fail "Missing $tool."
+    actual=$("$tool" --version) || setup_fail "Cannot run $tool."
+    [[ $actual == "$expected" ]] || setup_fail "Expected $expected; found $actual."
 }
 if [[ $mode != update-output ]]; then
-    require_version mdbook 'mdbook v0.5.4' 'Run: cargo +stable install mdbook --version 0.5.4 --locked'
-    require_version mdbook-quiz 'mdbook-quiz 0.5.0' 'Put the v0.5.0 bare binary for your platform on PATH (see README.md).'
+    require_version mdbook 'mdbook v0.5.4'
+    require_version mdbook-quiz 'mdbook-quiz 0.5.0'
 fi
 
 case $mode in
