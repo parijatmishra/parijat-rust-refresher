@@ -1,0 +1,4 @@
+# ShellCheck settings for this repository (see README.md, "Edit a shell script").
+# Resolve `source` paths relative to the script being checked, and follow them.
+source-path=SCRIPTDIR
+external-sources=true

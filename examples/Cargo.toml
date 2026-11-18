@@ -1,0 +1,10 @@
+[workspace]
+resolver = "3"
+# Add or remove example packages (directories under examples/) here.
+members = [
+    "ownership-demo",
+]
+
+[workspace.package]
+edition = "2024"
+publish = false
