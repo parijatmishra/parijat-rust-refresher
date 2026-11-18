@@ -11,3 +11,5 @@ debug/
 rustc-ice-*.txt
 target/
 tmp/
+/book/
+/src/quiz/

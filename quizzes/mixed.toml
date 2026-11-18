@@ -1,0 +1,24 @@
+[[questions]]
+id = "7012d307-b52c-4dbb-b0c3-4c1831968114"
+type = "Tracing"
+prompt.program = '''
+fn next_len(text: &str) -> usize {
+    text.len() + 1
+}
+
+fn main() {
+    let word = String::from("ink");
+    let n = next_len(&word);
+    println!("{} {}", word, n);
+}
+'''
+answer.doesCompile = true
+answer.stdout = "ink 4"
+context = "`&word` borrows the string; Rust coerces `&String` to the parameter type `&str`. The three bytes of `ink` give a length of 3. The tail expression returns 4, and the caller can still print `word`."
+
+[[questions]]
+id = "89842556-5dbc-475a-9dde-8a52e6dba524"
+type = "ShortAnswer"
+prompt.prompt = "In `fn count(text: &str) -> usize { text.len(); }`, delete exactly one punctuation mark to return the length. Type just that mark."
+answer.answer = ";"
+context = "Without the semicolon, `text.len()` is the tail expression. With the semicolon, the length is discarded and the body yields `()`, not `usize`."

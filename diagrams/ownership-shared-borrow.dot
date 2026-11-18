@@ -1,0 +1,12 @@
+digraph shared_borrow {
+    graph [rankdir=LR, bgcolor="white", pad=0.15];
+    node [shape=box, style=rounded, fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    view [label="view: &String"];
+    owned [label="owned: String"];
+    buffer [label="UTF-8 bytes: rust"];
+
+    view -> owned [label="borrows"];
+    owned -> buffer [label="owns"];
+}

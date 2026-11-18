@@ -1,0 +1,25 @@
+[[questions]]
+id = "41bbc975-927e-4bda-9896-87e8668b66d3"
+type = "MultipleChoice"
+prompt.prompt = '''
+Does this compile, and why?
+
+```rust
+fn byte_count(text: String) -> usize {
+    text.len()
+}
+
+fn main() {
+    let label = String::from("ink");
+    let n = byte_count(label);
+    println!("{label}: {n}");
+}
+```
+'''
+prompt.distractors = [
+    "Yes. Calling `len` only reads the string, so the caller keeps ownership.",
+    "Yes. Passing a `String` copies its bytes into the parameter.",
+    "No. Reading the length requires `label` to be mutable."
+]
+answer.answer = "No. Passing `label` by value moves the string into `text`; the later print uses a moved value."
+context = "The parameter type determines what crosses the call boundary. A `String` parameter takes the string even if the function only reads it. Returning a length does not return ownership of the string."

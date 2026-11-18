@@ -1,0 +1,16 @@
+[book]
+title = "Rust Refresher"
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+
+[rust]
+edition = "2024"
+
+[output.html.playground]
+runnable = false
+
+[preprocessor.quiz]
+cache-answers = false
