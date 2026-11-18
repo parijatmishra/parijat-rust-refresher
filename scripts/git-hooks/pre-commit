@@ -5,5 +5,5 @@ source "$(dirname -- "${BASH_SOURCE[0]}")/../common.sh"
 
 # Lint shell scripts only if the commit touches them or the ShellCheck config.
 if [[ -n $(git diff --cached --name-only --diff-filter=ACMR -- scripts .shellcheckrc) ]]; then
-    exec scripts/lint_scripts.sh
+    exec scripts/lint_scripts.sh --staged
 fi

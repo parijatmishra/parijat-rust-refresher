@@ -39,15 +39,16 @@ Every script checks for all of the following tools and fails if any is missing o
 
 All scripts live in `scripts/` and work from any directory.
 
-| Command                          | Effect                                                                                                                                                                                                  |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scripts/build.sh`               | Build `book/` with both quizzes and the checked-in SVGs. Leave the stdout fixtures alone.                                                                                                               |
-| `scripts/build.sh check`         | Test the book’s Rust examples as edition 2024, run `cargo test` on the `examples/` workspace, then run each example package with an `output.txt` and diff its stdout against that file.                 |
-| `scripts/build.sh update-output` | After an intentional example change, rerun each example package with an `output.txt` and replace that file only if the run succeeds. Review the diff.                                                   |
-| `scripts/build_diagrams.sh`      | Render diagrams. Run if you added/changed something in the `diagrams/` directory.                                                                                                                       |
-| `scripts/common.sh`              | Not run directly. Sourced by the other scripts: tool and version checks (`TOOL_VERSIONS`), Rust toolchain setup, temp-file cleanup. Changes the working directory to the repository root.               |
-| `scripts/lint_scripts.sh`        | Run ShellCheck on every shell script in `scripts/`, including Git hooks. Fails on any finding. See [Edit a shell script](#edit-a-shell-script).                                                         |
-| `scripts/git-hooks/pre-commit`   | Not run directly. Git runs it on `git commit` once `core.hooksPath` is set (see [Pre-requisites](#pre-requisites)). Runs `scripts/lint_scripts.sh` if the commit touches `scripts/` or `.shellcheckrc`. |
+| Command                            | Effect                                                                                                                                                                                                           |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/build.sh`                 | Build `book/` with both quizzes and the checked-in SVGs. Leave the stdout fixtures alone.                                                                                                                        |
+| `scripts/build.sh check`           | Test the book’s Rust examples as edition 2024, run `cargo test` on the `examples/` workspace, then run each example package with an `output.txt` and diff its stdout against that file.                          |
+| `scripts/build.sh update-output`   | After an intentional example change, rerun each example package with an `output.txt` and replace that file only if the run succeeds. Review the diff.                                                            |
+| `scripts/build_diagrams.sh`        | Render diagrams. Run if you added/changed something in the `diagrams/` directory.                                                                                                                                |
+| `scripts/common.sh`                | Not run directly. Sourced by the other scripts: tool and version checks (`TOOL_VERSIONS`), Rust toolchain setup, temp-file cleanup. Changes the working directory to the repository root.                        |
+| `scripts/lint_scripts.sh`          | Run ShellCheck on every shell script in `scripts/`, including Git hooks, as they are on disk. Fails on any finding. See [Edit a shell script](#edit-a-shell-script).                                             |
+| `scripts/lint_scripts.sh --staged` | Same, but lint the staged (Git index) versions of `scripts/` and `.shellcheckrc`, i.e., what would be committed.                                                                                                 |
+| `scripts/git-hooks/pre-commit`     | Not run directly. Git runs it on `git commit` once `core.hooksPath` is set (see [Pre-requisites](#pre-requisites)). Runs `scripts/lint_scripts.sh --staged` if the commit touches `scripts/` or `.shellcheckrc`. |
 
 Open `book/index.html` in a browser (`open book/index.html`).
 
@@ -101,6 +102,4 @@ Run `scripts/build.sh` and preview the chapter at reading width in both light an
 
 Keep shell scripts in `scripts/` (Git hooks in `scripts/git-hooks/`), and start each with `#!/usr/bin/env bash`, `set -euo pipefail`, and `source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"` (`../common.sh` from a hook).
 
-After adding or changing a script, run `scripts/lint_scripts.sh` and fix every finding; the pre-commit hook enforces this, but `git commit --no-verify` skips it. Do not pass flags to `shellcheck` on the command line; put project-wide settings in `.shellcheckrc`. Suppress a finding only when it is a false positive, with `# shellcheck disable=SCxxxx` on the line above the offending command and a comment explaining why.
-
-The hook lints the working tree, not the staged snapshot: stage all your script changes before committing, or the result may not match what you commit.
+After adding or changing a script, run `scripts/lint_scripts.sh` and fix every finding; the pre-commit hook enforces this, but `git commit --no-verify` skips it. Do not pass flags to `shellcheck` on the command line; put project-wide settings in `.shellcheckrc`. Suppress a finding only when it is a false positive, with `# shellcheck disable=SCxxxx` on the line above the offending command and a comment explaining why. The hook lints the staged versions, so unstaged edits neither fail nor rescue a commit.

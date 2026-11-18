@@ -22,14 +22,19 @@ REPO_ROOT=${SCRIPTS_DIR%/*}
 readonly SCRIPTS_DIR REPO_ROOT
 cd -- "$REPO_ROOT" || exit
 
-# Temporary files registered via make_temp are removed on exit.
-_temp_files=()
+# Temporary paths registered via make_temp or make_temp_dir are removed on exit.
+_temp_paths=()
 make_temp() { # make_temp <var> <dir> <prefix>: create a temp file; store its path in <var>
     local -n _out=$1
     _out=$(mktemp "$2/$3.XXXXXXXX")
-    _temp_files+=("$_out")
+    _temp_paths+=("$_out")
 }
-_cleanup() { (( ${#_temp_files[@]} == 0 )) || rm -f -- "${_temp_files[@]}"; }
+make_temp_dir() { # make_temp_dir <var> <prefix>: create a temp directory under $TMPDIR; store its path in <var>
+    local -n _out=$1
+    _out=$(mktemp -d "${TMPDIR:-/tmp}/$2.XXXXXXXX")
+    _temp_paths+=("$_out")
+}
+_cleanup() { (( ${#_temp_paths[@]} == 0 )) || rm -rf -- "${_temp_paths[@]}"; }
 trap _cleanup EXIT
 trap 'exit 129' HUP
 trap 'exit 130' INT
