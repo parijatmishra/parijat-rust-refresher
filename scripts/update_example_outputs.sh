@@ -2,9 +2,6 @@
 set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
 
-# Run each binary in BINARIES (scripts/common.sh) and replace its stdout fixture, if it has one
-# and the binary exits with the expected status. Use after an intentional change; review the diff.
-(( $# == 0 )) || fail 'Usage: scripts/update_example_outputs.sh'
-check_tools
-
+# Run every binary in the examples/ workspace and write its stdout to expected/<binary>.stdout,
+# if it exits with the expected status. Use after an intentional change; review the diff.
 run_example_binaries update

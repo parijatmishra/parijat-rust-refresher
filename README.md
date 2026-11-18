@@ -4,15 +4,15 @@ A personal refresher for the Rust programming language and ecosystem. Start a se
 
 ## Pre-requisites
 
-The development and build environment is **macOS** with [Homebrew](https://brew.sh/) (`brew`) installed. Linux and Windows are not supported. Homebrew requires the Xcode Command Line Tools, which provide `git`. The scripts assume the macOS versions of standard command-line utilities (`mktemp`, `diff`, `cut`, `sort`, `uniq`, `chmod`, …); other versions earlier on your `PATH` are untested.
+The development and build environment is **macOS** with [Homebrew](https://brew.sh/) (`brew`) installed. Linux and Windows are not supported. Homebrew requires the Xcode Command Line Tools, which provide `git`. The scripts assume the macOS versions of standard command-line utilities (`mktemp`, `diff`, `chmod`, …).
 
-Install the tools:
+Install the tools. Use the mdbook and mdbook-quiz versions pinned in `TOOL_VERSIONS` at the top of `scripts/common.sh`:
 
 ```bash
-brew install bash rustup graphviz shellcheck
+brew install bash rustup graphviz shellcheck jq   # jq is also in macOS 15 and later
 rustup toolchain install stable --profile minimal
-cargo +stable install mdbook --version 0.5.4 --locked
-cargo +stable install mdbook-quiz --version 0.5.0 --locked
+cargo +stable install mdbook --version <version> --locked
+cargo +stable install mdbook-quiz --version <version> --locked
 ```
 
 Homebrew's `rustup` is keg-only: put `$(brew --prefix rustup)/bin` and `~/.cargo/bin` on your `PATH`. The scripts run under `/usr/bin/env bash` and need Bash 5 or newer, so Homebrew's `bash` must precede `/bin/bash` (Bash 3.2) on your `PATH`.
@@ -23,72 +23,68 @@ Enable the repository's Git hooks once per clone, from the repository root:
 git config core.hooksPath scripts/git-hooks
 ```
 
-Every script checks for all of the following tools and fails if any is missing or has a different version:
-
-| Tool          | Required version (in `<tool> --version` output)                                                 |
-| ------------- | ----------------------------------------------------------------------------------------------- |
-| `mdbook`      | `mdbook v0.5.4`                                                                                 |
-| `mdbook-quiz` | `mdbook-quiz 0.5.0`                                                                             |
-| `dot`         | `graphviz version 16.1.1` (build number ignored)                                                |
-| `shellcheck`  | `version: 0.11.0`                                                                               |
-| `bash`        | 5 or newer (`brew install bash`)                                                                |
-| `rustup`      | Any version that can run the `stable` toolchain, which provides `cargo`, `rustc`, and `rustdoc` |
-| `jq`          | Any version (included in macOS 15 and later as `/usr/bin/jq`; otherwise `brew install jq`)      |
-| `git`         | Any version (Xcode Command Line Tools)                                                          |
-
-Unpinned tools (`jq`, `git`) are listed in `REQUIRED_TOOLS` in `scripts/common.sh`.
-
-**Important:** If you install a different version of a pinned tool (for example, after `brew upgrade graphviz shellcheck`), update `TOOL_VERSIONS` at the top of `scripts/common.sh` and the table above. After upgrading mdbook, also recheck [how `build_book.sh` tests code blocks](#how-build_booksh-tests-code-blocks).
+Every script first checks the tools listed at the top of `scripts/common.sh`, the single source of truth: `TOOL_VERSIONS` (exact versions) and `REQUIRED_TOOLS` (any version). On failure it points here. After installing a different mdbook or mdbook-quiz version, update `TOOL_VERSIONS`; after upgrading mdbook, also recheck [how `build_book.sh` tests code blocks](#how-build_booksh-tests-code-blocks).
 
 ## Build and check
 
 All scripts live in `scripts/`, work from any directory, and take no arguments: one script per use case.
 
-| Script                              | Use when                                                                                                           | Effect                                                                                                                                                                                                                                                                                                                                                        |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scripts/build_book.sh`             | You edited lessons, quizzes, or example code included in lessons                                                   | Fail if a diagram is stale (an SVG in `src/images/` is missing or older than its DOT source). Build the `examples/` workspace (dev profile), test the book’s Rust code blocks (edition 2024) against it with `mdbook test`, then build `book/` with both quizzes and the checked-in SVGs, only if the tests pass. Writes only `examples/target/` and `book/`. |
-| `scripts/check_examples.sh`         | You added or changed code in `examples/`                                                                           | Build every target of the `examples/` workspace, run its tests, then run each binary listed in `BINARIES` (in `scripts/common.sh`): check its exit status and diff its stdout against its fixture. Compiler warnings do not fail it.                                                                                                                          |
-| `scripts/update_example_outputs.sh` | You changed an example’s output on purpose, or added a fixture                                                     | Run each binary in `BINARIES` and replace its fixture if the exit status is as expected. Creates missing fixtures. Review the diff.                                                                                                                                                                                                                           |
-| `scripts/build_diagrams.sh`         | You added or changed a file in `diagrams/`                                                                         | Render each DOT file whose SVG is missing or older. See [Regenerate a diagram](#regenerate-a-diagram).                                                                                                                                                                                                                                                        |
-| `scripts/lint_scripts.sh`           | You added or changed a shell script                                                                                | Run ShellCheck on every shell script in `scripts/`, including Git hooks, as they are on disk. Fails on any finding. See [Edit a shell script](#edit-a-shell-script).                                                                                                                                                                                          |
-| `scripts/check_all.sh`              | Before committing or pushing                                                                                       | Run `lint_scripts.sh`, `check_examples.sh`, and `build_book.sh`, stopping at the first failure.                                                                                                                                                                                                                                                               |
-| `scripts/git-hooks/pre-commit`      | Not run directly: Git runs it on `git commit` once `core.hooksPath` is set (see [Pre-requisites](#pre-requisites)) | If the commit touches `scripts/` or `.shellcheckrc`, run ShellCheck on the staged (Git index) versions of the scripts, i.e., what will be committed.                                                                                                                                                                                                          |
-| `scripts/common.sh`                 | Not run directly: sourced by the other scripts                                                                     | Shared settings you edit by hand (`TOOL_VERSIONS`, `REQUIRED_TOOLS`, `BINARIES`) and helpers: tool and version checks, Rust toolchain setup, running example binaries, ShellCheck file list, diagram freshness, temp-file cleanup. Changes the working directory to the repository root.                                                                      |
+| Script                              | Use when                                                                                                           | Effect                                                                                                                                                                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/build_book.sh`             | You edited lessons, quizzes, diagrams, or example code included in lessons                                         | Render `diagrams/` to `src/diagrams/`, build the `examples/` workspace (dev profile), test the book’s Rust code blocks (edition 2024) against it with `mdbook test`, then build `book/` only if the tests pass. Writes only `src/diagrams/`, `examples/target/`, and `book/`.       |
+| `scripts/check_examples.sh`         | You added or changed code in `examples/`                                                                           | Build every target of the `examples/` workspace, run its tests, then run every binary and compare its exit status and stdout with its [expected files](#expected-output). Compiler warnings do not fail it.                                                                         |
+| `scripts/update_example_outputs.sh` | You changed an example’s output on purpose, or added a binary                                                      | Run every binary and write its stdout to its expected file, if it exits with the expected status. Review the diff.                                                                                                                                                                  |
+| `scripts/lint_scripts.sh`           | You added or changed a shell script                                                                                | Run ShellCheck on every shell script in `scripts/`, including Git hooks. Fails on any finding. See [Edit a shell script](#edit-a-shell-script).                                                                                                                                     |
+| `scripts/check_all.sh`              | Before committing or pushing                                                                                       | Run `lint_scripts.sh`, `check_examples.sh`, and `build_book.sh`, stopping at the first failure.                                                                                                                                                                                     |
+| `scripts/git-hooks/pre-commit`      | Not run directly: Git runs it on `git commit` once `core.hooksPath` is set (see [Pre-requisites](#pre-requisites)) | If the commit touches `scripts/` or `.shellcheckrc`, run `lint_scripts.sh`.                                                                                                                                                                                                         |
+| `scripts/common.sh`                 | Not run directly: sourced by the other scripts                                                                     | Tool lists you edit by hand (`TOOL_VERSIONS`, `REQUIRED_TOOLS`), then shared setup: reject arguments, check tools, change to the repository root, create a temporary directory removed on exit. Also runs example binaries for `check_examples.sh` and `update_example_outputs.sh`. |
+
+Build the book only with `scripts/build_book.sh`. Plain `mdbook build` or `mdbook serve` does not render `diagrams/`, so on a fresh clone the images are missing.
 
 Open `book/index.html` in a browser (`open book/index.html`).
 
-To preview while writing, run `mdbook serve --open`: it rebuilds and reloads on every save, and builds even while code blocks fail. It skips the tool checks, the examples build, and the tests, so run `scripts/build_book.sh` before committing.
+To preview while writing, run `mdbook serve --open`: it rebuilds and reloads on every save, and builds even while code blocks fail. It skips the tool checks, the diagrams, the examples build, and the tests: run `scripts/build_book.sh` once first (so `src/diagrams/` exists) and again after changing a diagram, and before committing.
 
 ## Project structure
 
-| Path                  | Purpose                                                                                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `book.toml`           | mdBook configuration: source directory, output directory, Rust edition for `mdbook test`, quiz preprocessor.                                                                                                                               |
-| `rust-toolchain.toml` | Selects the `stable` Rust toolchain.                                                                                                                                                                                                       |
-| `.shellcheckrc`       | ShellCheck configuration, used by `scripts/lint_scripts.sh` and editor integrations.                                                                                                                                                       |
-| `src/`                | Book source. `SUMMARY.md` defines the table of contents; one Markdown file per lesson, plus `quizzes.md` and `syntax-to-concept.md`.                                                                                                       |
-| `src/images/`         | Rendered SVG diagrams, checked in. Generated from `diagrams/`; do not edit by hand.                                                                                                                                                        |
-| `diagrams/`           | Graphviz DOT sources for the SVGs in `src/images/`.                                                                                                                                                                                        |
-| `quizzes/`            | `mdbook-quiz` TOML files, included from `src/quizzes.md`.                                                                                                                                                                                  |
-| `examples/`           | Cargo workspace of example packages included in lessons. Add/remove packages in `members` of `examples/Cargo.toml`; `examples/Cargo.lock` is the shared lock file.                                                                         |
-| `examples/<package>/` | One example package. Built with the dev profile only. Optional stdout fixtures (such as `output.txt`) hold the expected stdout of its binaries, checked by `scripts/check_examples.sh` and written by `scripts/update_example_outputs.sh`. |
-| `scripts/`            | Build and check scripts (see [Build and check](#build-and-check)).                                                                                                                                                                         |
-| `links.md`            | Reference links for further reading.                                                                                                                                                                                                       |
-| `book/`               | Build output (ignored by Git).                                                                                                                                                                                                             |
+| Path                           | Purpose                                                                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `book.toml`                    | mdBook configuration: source directory, output directory, Rust edition for `mdbook test`, quiz preprocessor.                                                       |
+| `rust-toolchain.toml`          | Selects the `stable` Rust toolchain.                                                                                                                               |
+| `.shellcheckrc`                | ShellCheck configuration, used by `scripts/lint_scripts.sh` and editor integrations.                                                                               |
+| `src/`                         | Book source. `SUMMARY.md` defines the table of contents; one Markdown file per lesson, plus `quizzes.md` and `syntax-to-concept.md`.                               |
+| `diagrams/`                    | Graphviz DOT sources for the book’s diagrams.                                                                                                                      |
+| `src/diagrams/`                | SVGs rendered from `diagrams/` by `scripts/build_book.sh` (ignored by Git). Lessons link to `diagrams/<stem>.svg`.                                                 |
+| `quizzes/`                     | `mdbook-quiz` TOML files, included from `src/quizzes.md`.                                                                                                          |
+| `examples/`                    | Cargo workspace of example packages included in lessons. Add/remove packages in `members` of `examples/Cargo.toml`; `examples/Cargo.lock` is the shared lock file. |
+| `examples/<package>/expected/` | Expected stdout (and optionally exit status) of each binary in the package. See [Expected output](#expected-output).                                               |
+| `scripts/`                     | Build and check scripts (see [Build and check](#build-and-check)).                                                                                                 |
+| `links.md`                     | Reference links for further reading.                                                                                                                               |
+| `book/`                        | Build output (ignored by Git).                                                                                                                                     |
 
 ## Add or change example code
 
 Lessons include code from the `examples/` workspace. To add a package:
 
 1. From the repository root, run `cargo new --vcs none examples/my-demo`. Cargo adds `my-demo` to `members` in `examples/Cargo.toml` (tidy the formatting) and makes the package inherit `edition` and `publish` from the workspace.
-2. Run `cargo build --manifest-path examples/Cargo.toml` to update `examples/Cargo.lock`. The scripts pass `--locked` and run offline, so they never update it. Repeat after changing dependencies.
-3. **Add each binary to `BINARIES` in `scripts/common.sh`**, by hand: package, binary name, expected exit status (for example, `101` for a demo that panics), stdout fixture relative to the package (`-` for none), and arguments. `check_examples.sh` and `update_example_outputs.sh` run only the listed binaries; it cannot detect a missing entry. Binaries must terminate on their own; stdin is `/dev/null`.
-4. If the lesson shows stdout, give the binary a fixture (for example, `output.txt`), run `scripts/update_example_outputs.sh` to create it, and include it with `{{#include ../examples/my-demo/output.txt}}`.
-5. Include the code in a lesson (see below), then run `scripts/check_examples.sh` and `scripts/build_book.sh`. Commit the package, `examples/Cargo.toml`, `examples/Cargo.lock`, `scripts/common.sh`, and fixtures together.
+2. Run `cargo build --manifest-path examples/Cargo.toml` to update `examples/Cargo.lock`. The scripts pass `--locked`, so they never update it. Repeat after changing dependencies.
+3. If a binary should exit with a non-zero status (for example, a demo that panics exits with `101`), write that number to `examples/my-demo/expected/<binary>.status`.
+4. Run `scripts/update_example_outputs.sh` to create `examples/my-demo/expected/<binary>.stdout`, and check its content.
+5. Include the code in a lesson (see below), and its output with `{{#include ../examples/my-demo/expected/my-demo.stdout}}` in a ` ```text ` block.
+6. Run `scripts/check_examples.sh` and `scripts/build_book.sh`. Commit the package (including `expected/`), `examples/Cargo.toml`, and `examples/Cargo.lock` together.
 
-To remove a package: delete its directory, its entry in `members`, its `BINARIES` entries, and its `{{#include}}` lines, then repeat step 2. When you add, rename, or remove a binary in an existing package, update `BINARIES` too.
+To remove a package: delete its directory, its entry in `members`, and its `{{#include}}` lines, then repeat step 2.
 
 After changing code in `examples/`, run `scripts/check_examples.sh`. If a lesson includes the changed code, also run `scripts/build_book.sh`.
+
+### Expected output
+
+The scripts find every binary in the workspace through `cargo metadata`; there is no list to maintain. Each binary runs without arguments, with stdin from `/dev/null`, and must terminate on its own. For a binary `<binary>` in package directory `<package>`:
+
+| File                                          | Content                                                      | Required                                   |
+| --------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
+| `examples/<package>/expected/<binary>.stdout` | Its expected stdout. Written by `update_example_outputs.sh`. | Yes: `check_examples.sh` fails without it. |
+| `examples/<package>/expected/<binary>.status` | Its expected exit status, such as `101`.                     | No: the default is `0`.                    |
 
 ### Include example code in a lesson
 
@@ -142,16 +138,22 @@ To fix a failing code block:
 
 Edit the table in `src/syntax-to-concept.md` by hand. Put syntax in code spans, distinguish meanings by context (for example, `&` in an expression versus a type), and link to the lesson rather than duplicating its explanation. Browser Find handles literal symbols; book search needs no changes.
 
-## Regenerate a diagram
+## Add or change a diagram
 
 Draft Graphviz DOT by hand or with an LLM. Keep files directly in `diagrams/` with topic-prefixed names, such as `ownership-shared-borrow.dot`. Use readable labels and clear arrows. Give the graph a light background if dark labels would disappear in a dark theme.
 
-Edit the DOT, not the SVG. Run `scripts/build_diagrams.sh` (`scripts/build_book.sh` fails until you do): it matches stems in `src/images/`, replacing an SVG only after `dot -Tsvg` succeeds. It leaves unrelated SVGs alone. Freshness uses **file timestamps**, not Git status: `touch diagrams/ownership-shared-borrow.dot` to force a render on the next run. Git checkouts can reorder timestamps: if `build_book.sh` reports a diagram as stale although its SVG is already up to date in Git, `touch src/images/<stem>.svg`.
-
-Run `scripts/build_book.sh` (or `mdbook serve --open`) and preview the chapter at reading width in both light and dark themes. Commit the changed DOT and regenerated SVG together.
+In a lesson, link to the rendered SVG: `![Description](diagrams/ownership-shared-borrow.svg)`. Run `scripts/build_book.sh`: it renders every DOT file, then builds the book. Preview the chapter at reading width in both light and dark themes. Commit only the DOT file; the SVGs are generated.
 
 ## Edit a shell script
 
-Keep shell scripts in `scripts/` (Git hooks in `scripts/git-hooks/`), and start each with `#!/usr/bin/env bash`, `set -euo pipefail`, and `source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"` (`../common.sh` from a hook).
+Keep shell scripts in `scripts/` (Git hooks in `scripts/git-hooks/`), and start each with:
 
-After adding or changing a script, run `scripts/lint_scripts.sh` and fix every finding; the pre-commit hook enforces this, but `git commit --no-verify` skips it. Do not pass flags to `shellcheck` on the command line; put project-wide settings in `.shellcheckrc`. Suppress a finding only when it is a false positive, with `# shellcheck disable=SCxxxx` on the line above the offending command and a comment explaining why. The hook lints the staged versions, so unstaged edits neither fail nor rescue a commit.
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"   # ../common.sh from a hook
+```
+
+`common.sh` rejects arguments, checks tools, changes to the repository root, and provides `TMP_DIR`; the script needs no setup of its own.
+
+After adding or changing a script, run `scripts/lint_scripts.sh` and fix every finding; the pre-commit hook enforces this, but `git commit --no-verify` skips it. Do not pass flags to `shellcheck` on the command line; put project-wide settings in `.shellcheckrc`. Suppress a finding only when it is a false positive, with `# shellcheck disable=SCxxxx` on the line above the offending command and a comment explaining why.

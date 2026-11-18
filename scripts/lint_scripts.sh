@@ -2,8 +2,5 @@
 set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
 
-# Lint every shell script in scripts/ (including Git hooks) as it is on disk, using .shellcheckrc.
-(( $# == 0 )) || fail 'Usage: scripts/lint_scripts.sh'
-check_tools
-
-shellcheck_scripts
+# Lint every shell script in scripts/ (including Git hooks), using .shellcheckrc.
+shellcheck -- scripts/*.sh scripts/git-hooks/*

@@ -14,7 +14,7 @@ println!("{owned}");
 
 Use `&owned` instead. It creates a shared reference (`&String`) that lets `view` read the string without taking it or copying its bytes. `owned` remains responsible for the buffer. Rust prevents mutation of the string while the shared borrow is still in use and prevents the reference from outliving its referent.
 
-![The shared reference view points to owned, the String that still owns the buffer containing rust.](images/ownership-shared-borrow.svg)
+![The shared reference view points to owned, the String that still owns the buffer containing rust.](diagrams/ownership-shared-borrow.svg)
 
 ```rust
 {{#include ../examples/ownership-demo/src/main.rs}}
@@ -29,7 +29,7 @@ cargo run --locked --quiet --manifest-path examples/ownership-demo/Cargo.toml
 Stdout:
 
 ```text
-{{#include ../examples/ownership-demo/output.txt}}
+{{#include ../examples/ownership-demo/expected/ownership-demo.stdout}}
 ```
 
 For more on moves, references, and slices, see [Brown’s ownership chapter](https://rust-book.cs.brown.edu/ch04-00-understanding-ownership.html).

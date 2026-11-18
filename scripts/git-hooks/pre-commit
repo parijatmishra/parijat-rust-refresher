@@ -3,14 +3,7 @@
 set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/../common.sh"
 
-# Lint shell scripts only if the commit touches them or the ShellCheck config.
-[[ -n $(git diff --cached --name-only --diff-filter=ACMR -- scripts .shellcheckrc) ]] || exit 0
-check_tools
-
-# Lint the staged (Git index) versions, i.e., what will be committed: export staged scripts/
-# and .shellcheckrc to a temp dir with the same layout, and lint there.
-staged=
-make_temp_dir staged lint-staged
-git ls-files -z -- scripts .shellcheckrc | git checkout-index -z --stdin --prefix="$staged/"
-cd -- "$staged"
-shellcheck_scripts
+# Lint shell scripts (as they are on disk) only if the commit touches them or the ShellCheck config.
+if [[ -n $(git diff --cached --name-only -- scripts .shellcheckrc) ]]; then
+    scripts/lint_scripts.sh
+fi
