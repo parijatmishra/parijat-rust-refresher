@@ -9,22 +9,21 @@ Install [rustup](https://rustup.rs/) and run:
 ```bash
 rustup toolchain install stable --profile minimal
 cargo +stable install mdbook --version 0.5.4 --locked
+cargo +stable install mdbook-quiz --version 0.5.0 --locked
 ```
 
-From the [mdbook-quiz 0.5.0 release](https://github.com/cognitive-engineering-lab/mdbook-quiz/releases/tag/v0.5.0), download the **bare** archive for your OS and CPU, not the full archive. Extract the executable `mdbook-quiz` into a directory on `PATH` (for example, `~/.cargo/bin`, alongside `mdbook`). Check with `mdbook-quiz --version`.
-
-Setup can require a network connection. Builds and checks use **locally installed stable**, with no network update or tool installation. Run `rustup update stable` explicitly when you want the current release.
+**Important:** If you update versions above, update `./build.sh` as well.
 
 ## Build and check
 
-| Command | Effect |
-| --- | --- |
-| `./build.sh` | Build `book/` with both quizzes and the checked-in SVGs. Leave the stdout fixture alone. |
-| `./build.sh check` | Test the book’s Rust examples as edition 2024, run the locked demo, and diff its stdout against `examples/ownership-demo/output.txt`. |
-| `./build.sh update-output` | After an intentional demo change, replace the fixture only if the demo succeeds. Review the diff. |
-| `./build_diagrams.sh` | Render only missing or stale diagrams. Separate from all book commands. |
+| Command                    | Effect                                                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `./build.sh`               | Build `book/` with both quizzes and the checked-in SVGs. Leave the stdout fixture alone.                                              |
+| `./build.sh check`         | Test the book’s Rust examples as edition 2024, run the locked demo, and diff its stdout against `examples/ownership-demo/output.txt`. |
+| `./build.sh update-output` | After an intentional demo change, replace the fixture only if the demo succeeds. Review the diff.                                     |
+| `./build_diagrams.sh`      | Render diagrams. Run if you added/changed something in `diagrams/` directory.                                                         |
 
-Open `book/index.html` in a browser (`open book/index.html` on macOS, `xdg-open book/index.html` on Linux), then select **Quizzes** in the sidebar. Both scripts also accept invocation by path from another working directory.
+Open `book/index.html` in a browser (`open book/index.html` on macOS, `xdg-open book/index.html` on Linux).
 
 ## Add a quiz
 
