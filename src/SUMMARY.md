@@ -1,8 +1,12 @@
 # Summary
 
-[Introduction](intro.md)
+[Introduction](01-intro.md)
 
-[Syntax-to-concept index](syntax-to-concept.md)
+[Syntax Index](02-syntax.md)
+
+[Resources](03-resources.md)
+
+
 
 [Quizzes](quizzes.md)
 

@@ -1,10 +1,19 @@
 # Introduction
 
-Coming back to Rust? Start with the [mixed diagnostic](quizzes.md#mixed-diagnostic) before opening a lesson. Mark questions you missed, guessed, or answered slowly. Follow their review links, then try the matching topic exercise without looking. Keep your own shortlist for next time.
+Coming back to Rust after a while and need a refresher?
 
-For a lookup, use book search for a term such as *move*. If you recognize the notation but not its name, use the [syntax-to-concept index](syntax-to-concept.md).
 
-## Coverage outline
+| Goal | Action |
+| --- | --- |
+| Unsure what a particular Rust syntax means? | See [Syntax Index](02-syntax.md) |
+| Unsure if you know some Rust concept? | See the lessons below, and do the quizzes at the top |
+| Want to practice writing Rust code? | Do some of the exercises from [100 Exercises To Learn Rust][100-ex-rs] or [rustlings][rustlings] |
+| Want to find cheatsheets, manuals, books? | See [Resources](03-resources.md) |
+
+[100-ex-rs]: <https://rust-exercises.com/100-exercises/>
+[rustlings]: <https://rustlings.rust-lang.org/>
+
+## Outline
 
 The linked lessons exist now; the remaining entries are the plan. The sequence follows the [Brown Experimental Edition](https://rust-book.cs.brown.edu/); use the [Rust Reference](https://doc.rust-lang.org/reference/) to check language details and spot gaps.
 
