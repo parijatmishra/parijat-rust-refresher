@@ -1,42 +1,30 @@
 # Resources
 
-## Cheat Sheets
+Cheat Sheets:
 
 - [cheats.rs][cheats-rs]
 
 [cheats-rs]: <https://cheats.rs/>
 
-## Core Documentation
+Core Documentation:
 
-If you installed Rust using `rustup`, a lot of documentation is already installed. Open it in the browser with:
-
-```sh
-rustup doc
-```
-
-If you installed Rust with `rustup install --profile minimal`, then you can install the documentation with:
-
-```sh
-rustup component add rust-docs
-```
-
-You get:
-- The Rust Programming Language (TRPL) aka "The Book" ([online][trpl])
-- Rust By Example ([online][rust-by-example])
-- Rust Standard Library Documentation ([online][rust-std])
-- Rust Release Notes ([online][releases-rs])
-- Rust Edition Guide ([online][rust-edition-guide])
-- The `rustc` Book (local only)
-- The Cargo Book ([online][cargo-book])
-- The Rustdoc Book ([online][rustdoc-book])
-- The Clippy Book ([online][clippy-book])
-- `rustc` Error Codes (local only)
-- The Rust Language Reference ([online][rust-reference])
-- The Rust Style Guide ([online][rust-style-guide])
-- The Rustonomicon ([online][rustonomicon])
-- The Unstable Book (for unstable features) ([online][rust-unstable])
-- The Embedded Rust Book ([online][rust-embedded])
-- Rust Standard Library Documentation ([online][rust-std])
+- Run `rustup doc` (`rustup compoenent add rust-docs` if you did a minimal install) to open locally installed Rust documentation in a browser. You get:
+  - The Rust Programming Language (TRPL) aka "The Book" ([online][trpl])
+  - Rust By Example ([online][rust-by-example])
+  - Rust Standard Library Documentation ([online][rust-std])
+  - Rust Release Notes ([online][releases-rs])
+  - Rust Edition Guide ([online][rust-edition-guide])
+  - The `rustc` Book (local only)
+  - The Cargo Book ([online][cargo-book])
+  - The Rustdoc Book ([online][rustdoc-book])
+  - The Clippy Book ([online][clippy-book])
+  - `rustc` Error Codes (local only)
+  - The Rust Language Reference ([online][rust-reference])
+  - The Rust Style Guide ([online][rust-style-guide])
+  - The Rustonomicon ([online][rustonomicon])
+  - The Unstable Book (for unstable features) ([online][rust-unstable])
+  - The Embedded Rust Book ([online][rust-embedded])
+  - Rust Standard Library Documentation ([online][rust-std])
 
 [trpl]: <https://doc.rust-lang.org/book/>
 [rust-by-example]: <https://doc.rust-lang.org/rust-by-example/>
@@ -53,22 +41,20 @@ You get:
 [rust-embedded]: <https://docs.rust-embedded.org/book/>
 
 Online only:
+
 - [The Rustup Book][rustup-book]
 
 [rustup-book]: <https://rust-lang.github.io/rustup/>
 
-## Third Party Crates Docs
+Third Party Crates Docs:
 
-The command `cargo doc --open` will generate documentation for your project *and* all its dependencies in their correct version, and open it in your browser.
-
-Otherwise:
+- The command `cargo doc --open` will generate documentation for your project *and* all its dependencies in their correct version, and open it in your browser.
 - [docs.rs][docs-rs]: searchable documentation for many Rust crates.
 
 [docs-rs]: <https://docs.rs/>
 
 
-
-## Crate Directories
+Crate Directories:
 
 - [blessed.rs][blessed-rs]: opinionated directory of recommended crates, grouped by purpose.
 - [lib.rs][lib-rs]: collection of crates by purpose, less opinionated.
@@ -79,13 +65,13 @@ Otherwise:
 [lib-rs]: <https://lib.rs/>
 [awesome-rust]: <https://github.com/rust-unofficial/awesome-rust>
 
-## News
+News:
 
 - [This Week in Rust][this-week]: handpicked Rust updates.
 
 [this-week]: <https://this-week-in-rust.org/>
 
-## Books
+Books:
 
 - [The Rust Programming Language - Experimental Edition][trpl-b], like [The Rust Programming Language][trpl] aka "The Book", but with quizzes and explanatory diagrams.
 - [Command Line Applications in Rust][cli-rs]: CLI tutorial.
