@@ -13,4 +13,5 @@ edition = "2024"
 runnable = false
 
 [preprocessor.quiz]
+fullscreen = true
 cache-answers = false

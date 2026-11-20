@@ -1,0 +1,74 @@
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "On macOS, you installed rustup with Homebrew. How should you update rustup itself?"
+prompt.distractors = ["`rustup self update`", "`rustup update`"]
+answer.answer = "`brew upgrade rustup`"
+context = "Homebrew manages this rustup installation. `rustup update` updates toolchains instead."
+id = "648c4b9a-ebaa-4e30-87b4-5f181727c3ac"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Which are Rust's three release channels?"
+prompt.distractors = ["stable, preview, nightly", "stable, beta, development"]
+answer.answer = "stable, beta, nightly"
+context = "Rust provides stable, beta, and nightly channels."
+id = "a40afb73-61b5-448e-8dc2-b0536142708c"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Stable is installed. Which command makes it the default toolchain?"
+prompt.distractors = ["`rustup install stable`", "`rustup update stable`"]
+answer.answer = "`rustup default stable`"
+context = "Installing or updating a toolchain is separate from setting the default."
+id = "74880f03-a4d0-4e33-a2cc-008d404b4af5"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Stable is already the default. Which command installs nightly without changing the default?"
+prompt.distractors = ["`rustup default nightly`", "`cargo +nightly build`"]
+answer.answer = "`rustup toolchain install nightly`"
+context = "Installing nightly does not make it the default. The `+nightly` syntax selects it for a command."
+id = "83b6a03b-3717-48d1-abf2-91e529ec3f30"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Nightly is installed, stable is the default, and no project or environment override applies. Which command builds once with nightly without changing the default?"
+prompt.distractors = ["`rustup default nightly`", "`cargo build`"]
+answer.answer = "`cargo +nightly build`"
+context = "The `+nightly` selector applies to that Cargo invocation."
+id = "e1a9bd7d-5170-48ff-aef0-39d3e7989657"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "A project should use nightly without changing the global default, and no higher-priority override applies. Which `rust-toolchain.toml` content selects nightly?"
+prompt.distractors = [
+    '`[package]` followed by `channel = "nightly"`',
+    '`[toolchain]` followed by `default = "nightly"`',
+]
+answer.answer = '`[toolchain]` followed by `channel = "nightly"`'
+context = "The `[toolchain]` table's `channel` field selects the project toolchain."
+id = "1de90584-089f-48fa-8010-0c3fba0040cc"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Which command updates all installed toolchains?"
+prompt.distractors = ["`rustup update stable`", "`rustup check`"]
+answer.answer = "`rustup update`"
+context = "Without a toolchain argument, `rustup update` updates all installed toolchains."
+id = "6c009e92-dc47-4b6e-a798-1c54afa78fdc"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Stable and nightly are installed. Which command updates stable specifically?"
+prompt.distractors = ["`rustup default stable`", "`rustup check stable`"]
+answer.answer = "`rustup update stable`"
+context = "The toolchain argument limits the update to stable; `default` changes the default selection."
+id = "a0511703-f23c-4856-b860-50baa5cb558a"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "Which command checks whether installed toolchains are outdated without downloading updates?"
+prompt.distractors = ["`rustup update`", "`rustup toolchain install`"]
+answer.answer = "`rustup check`"
+context = "`rustup check` reports available updates; it may access the network to check."
+id = "a5985161-707d-40d3-9454-0a4404ca7cc4"
