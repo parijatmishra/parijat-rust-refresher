@@ -1,6 +1,6 @@
 # parijat-rust-refresher
 
-A personal refresher for the Rust programming language and ecosystem. Start a session on **Quizzes**. Use the mixed diagnostic to pick lessons, then drill by topic. For a lookup, go straight to search or the syntax-to-concept index.
+A personal refresher for the Rust programming language and ecosystem.
 
 ## Pre-requisites
 
@@ -55,10 +55,10 @@ To preview while writing, run `mdbook serve --open`: it rebuilds and reloads on 
 | `book.toml`                    | mdBook configuration: source directory, output directory, Rust edition for `mdbook test`, quiz preprocessor.                                                       |
 | `rust-toolchain.toml`          | Selects the `stable` Rust toolchain.                                                                                                                               |
 | `.shellcheckrc`                | ShellCheck configuration, used by `scripts/lint_scripts.sh` and editor integrations.                                                                               |
-| `src/`                         | Book source. `SUMMARY.md` defines the table of contents; one Markdown file per lesson, plus `quizzes.md` and `syntax-to-concept.md`.                               |
+| `src/`                         | Book source. `SUMMARY.md` defines the table of contents; one Markdown file per lesson and `syntax-to-concept.md`.                               |
 | `diagrams/`                    | Graphviz DOT sources for the book’s diagrams.                                                                                                                      |
 | `src/diagrams/`                | SVGs rendered from `diagrams/` by `scripts/build_book.sh` (ignored by Git). Lessons link to `diagrams/<stem>.svg`.                                                 |
-| `quizzes/`                     | `mdbook-quiz` TOML files, included from `src/quizzes.md`.                                                                                                          |
+| `quizzes/`                     | `mdbook-quiz` TOML files.                                                                                                          |
 | `examples/`                    | Cargo workspace of example packages included in lessons. Add/remove packages in `members` of `examples/Cargo.toml`; `examples/Cargo.lock` is the shared lock file. |
 | `examples/<package>/expected/` | Expected stdout (and optionally exit status) of each binary in the package. See [Expected output](#expected-output).                                               |
 | `scripts/`                     | Build and check scripts (see [Build and check](#build-and-check)).                                                                                                 |
@@ -134,7 +134,7 @@ To fix a failing code block:
 
 1. Put a TOML file under `quizzes/`. Use a `[[questions]]` entry per question. Copy a starter of the same type: `Tracing` for program behavior, `MultipleChoice` for distinctions, or `ShortAnswer` for an exact, unambiguous result. Explain the answer in `context`.
 2. Preserve an existing question’s `id` when editing it. For a **new** question, delete any copied `id`; the plugin writes a new UUID on build. Commit newly generated IDs with the quiz. The starters already have IDs.
-3. Include `{{#quiz ../quizzes/your-topic.toml}}` in `src/quizzes.md` and add visible review links to lesson sections. Keep lessons quiz-free. Use standalone, deterministic, edition-independent tracing programs: this plugin invokes `rustc` without an edition flag. Put edition-sensitive examples and open-ended repairs in Markdown instead. Hide sample solutions and rubrics in `<details>` and test the Rust fences with `scripts/build_book.sh`.
+3. Place `{{#quiz ../quizzes/your-topic.toml}}` below the lesson or section heading. Use standalone, deterministic, edition-independent tracing programs: this plugin invokes `rustc` without an edition flag. Put edition-sensitive examples and open-ended repairs in Markdown instead. Hide sample solutions and rubrics in `<details>` and test the Rust fences with `scripts/build_book.sh`.
 4. Build, check, and try the quiz in a browser. Confirm you can find its review links before answering.
 
 ## Extend the syntax index
