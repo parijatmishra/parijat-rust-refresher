@@ -4,6 +4,8 @@ A personal refresher for the Rust programming language and ecosystem. Start a se
 
 ## Pre-requisites
 
+Run `scripts/check_prereqs.sh` from the repository root first. It reports each prerequisite and exits with status 1 if anything is missing or mismatched.
+
 The development and build environment is **macOS** with [Homebrew](https://brew.sh/) (`brew`) installed. Linux and Windows are not supported. Homebrew requires the Xcode Command Line Tools, which provide `git`. The scripts assume the macOS versions of standard command-line utilities (`mktemp`, `diff`, `chmod`, …).
 
 Install the tools. Use the mdbook and mdbook-quiz versions pinned in `TOOL_VERSIONS` at the top of `scripts/common.sh`:
@@ -23,7 +25,7 @@ Enable the repository's Git hooks once per clone, from the repository root:
 git config core.hooksPath scripts/git-hooks
 ```
 
-Every script first checks the tools listed at the top of `scripts/common.sh`, the single source of truth: `TOOL_VERSIONS` (exact versions) and `REQUIRED_TOOLS` (any version). On failure it points here. After installing a different mdbook or mdbook-quiz version, update `TOOL_VERSIONS`; after upgrading mdbook, also recheck [how `build_book.sh` tests code blocks](#how-build_booksh-tests-code-blocks).
+Other scripts first check the tools listed at the top of `scripts/common.sh`, the single source of truth: `TOOL_VERSIONS` (exact versions) and `REQUIRED_TOOLS` (any version). On failure it points here. After installing a different mdbook or mdbook-quiz version, update `TOOL_VERSIONS`; after upgrading mdbook, also recheck [how `build_book.sh` tests code blocks](#how-build_booksh-tests-code-blocks).
 
 ## Build and check
 
@@ -32,6 +34,7 @@ All scripts live in `scripts/`, work from any directory, and take no arguments: 
 | Script                              | Use when                                                                                                           | Effect                                                                                                                                                                                                                                                                              |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `scripts/build_book.sh`             | You edited lessons, quizzes, diagrams, or example code included in lessons                                         | Render `diagrams/` to `src/diagrams/`, build the `examples/` workspace (dev profile), test the book’s Rust code blocks (edition 2024) against it with `mdbook test`, then build `book/` only if the tests pass. Writes only `src/diagrams/`, `examples/target/`, and `book/`.       |
+| `scripts/check_prereqs.sh`          | Before setting up or using the project                                                                             | Check the required tools, their versions where pinned, and the active stable Rust toolchain; report every prerequisite.                                                                                                                                                             |
 | `scripts/check_examples.sh`         | You added or changed code in `examples/`                                                                           | Build every target of the `examples/` workspace, run its tests, then run every binary and compare its exit status and stdout with its [expected files](#expected-output). Compiler warnings do not fail it.                                                                         |
 | `scripts/update_example_outputs.sh` | You changed an example’s output on purpose, or added a binary                                                      | Run every binary and write its stdout to its expected file, if it exits with the expected status. Review the diff.                                                                                                                                                                  |
 | `scripts/lint_scripts.sh`           | You added or changed a shell script                                                                                | Run ShellCheck on every shell script in `scripts/`, including Git hooks. Fails on any finding. See [Edit a shell script](#edit-a-shell-script).                                                                                                                                     |
@@ -154,6 +157,6 @@ set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"   # ../common.sh from a hook
 ```
 
-`common.sh` rejects arguments, checks tools, changes to the repository root, and provides `TMP_DIR`; the script needs no setup of its own.
+`common.sh` rejects arguments, checks tools, changes to the repository root, and provides `TMP_DIR`; the script needs no setup of its own. `check_prereqs.sh` is the exception: it loads only the tool lists so it can report every failure.
 
 After adding or changing a script, run `scripts/lint_scripts.sh` and fix every finding; the pre-commit hook enforces this, but `git commit --no-verify` skips it. Do not pass flags to `shellcheck` on the command line; put project-wide settings in `.shellcheckrc`. Suppress a finding only when it is a false positive, with `# shellcheck disable=SCxxxx` on the line above the offending command and a comment explaining why.

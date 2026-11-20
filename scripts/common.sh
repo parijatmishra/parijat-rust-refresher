@@ -12,6 +12,9 @@ TOOL_VERSIONS=(
 # Tools that must be present, any version.
 REQUIRED_TOOLS=(rustup cargo dot shellcheck jq git)
 
+# Let check_prereqs.sh read the tool lists without running the setup it checks.
+if [[ ${_CHECK_PREREQS_LISTS_ONLY:-} == 1 ]]; then return 0; fi
+
 fail() { printf '%s\n' "$*" >&2; exit 1; }
 warn() { printf 'Warning: %s\n' "$*" >&2; }
 setup_fail() { fail "$* See README.md (Pre-requisites)."; }
