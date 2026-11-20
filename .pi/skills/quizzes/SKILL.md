@@ -9,9 +9,12 @@ description: Draft, revise, and verify inline mdbook-quiz quizzes for Rust Refre
 
 - Read `README.md`, locate the chapter in `src/SUMMARY.md`, and read it and relevant included examples. Ask if the target is unclear.
 - Propose numbered questions with answers and brief explanations. Refine in chat; write only when asked. Implement approved sets without adding questions. Flag unclear or incorrect lesson content instead of rewriting it or grading against it.
-- Cover the entire chapter; test its main takeaways. For each question, name a distinct skill or misconception to review after a wrong answer; revise or cut vague or duplicate targets.
-- Prefer prediction and application to recall unless exact wording, syntax, or commands matter. Make prompts self-contained, state assumptions, accept valid answers, and use plausible but clearly wrong distractors.
-- In `context`, explain the reasoning and likely mistake.
+- Cover the entire chapter; test its main takeaways. Focus each question on one conceptual decision and name a distinct skill or misconception to review after a wrong answer; revise or cut vague or duplicate targets.
+- Use direct recall or short answers for small, exact facts. For concepts, prefer a concrete scenario (code and an action) followed by a predicted outcome. Test the learner's mental model rather than command-sequence recognition, unless command syntax is the target.
+- Make prompts self-contained, state assumptions, and accept valid answers. Use small variations from lesson examples to test understanding rather than copying, without introducing untaught concepts.
+- Use plausible but clearly wrong distractors. For conceptual questions, each should expose a specific misconception (e.g. compilation versus execution or formatting), not merely malformed command syntax. Use syntax alternatives when syntax is the target.
+- When the user says "short quiz" he means a few focused questions, not that the text of each question is short; do not strip useful scenario context just to shorten prompts. Prefer clarity over minimal word count.
+- In `context`, briefly explain the reasoning and correct the central misconception. State the key distinction rather than repeating every prompt detail.
 
 ## Place and update
 
