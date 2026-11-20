@@ -1,0 +1,39 @@
+[[questions]]
+type = "ShortAnswer"
+prompt.prompt = "What filename extension do Rust source files use? Include the leading dot."
+prompt.response = "short"
+answer.answer = ".rs"
+context = "Rust source filenames conventionally end in `.rs`, as in `main.rs`."
+id = "608a3c57-0d2d-4366-b699-7d003f7b3dba"
+
+[[questions]]
+type = "ShortAnswer"
+prompt.prompt = "What function is the entry point of an ordinary Rust executable? Type only the function name."
+prompt.response = "short"
+answer.answer = "main"
+context = "Execution starts in `main`; the source file's name does not determine the entry point."
+id = "40e51247-d66c-490e-a9a2-c3625fd5aaea"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = """
+Let's say you have the following program in a file `hello.rs`:
+
+```
+fn main() {
+  println!("Hello world!");
+}
+```
+
+Say you then run the command `rustc hello.rs` from the command-line. Which statement best describes what happens next?
+"""
+prompt.distractors = [
+  "`rustc` will print an error because this is an invalid program",
+  "`rustc` executes the program and prints out `Hello world!`",
+  "`rustc` reformats `hello.rs` according to the Rust style guide"
+]
+answer.answer = "`rustc` generates a binary executable named `hello`"
+context = """
+Running `rustc` checks and compiles your program, but does not execute it.
+"""
+id = "5990608c-ec04-4960-afa0-6643c232a6cd"
